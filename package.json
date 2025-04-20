@@ -40,7 +40,6 @@
   },
 
   "dependencies": {
-    "electron-builder": "^26.0.12",
     "electron-updater": "^6.6.2"
   }
 }
