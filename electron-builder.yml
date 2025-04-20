@@ -1,0 +1,25 @@
+appId: com.coldbydefault.reeed
+productName: Reeed Docs-Manager
+copyright: Copyright © 2025 AnotherProject
+
+directories:
+  output: dist
+  buildResources: build
+
+win:
+  target:
+    - nsis
+  icon: favicon.ico
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+publish:
+  provider: github
+  owner: coldbydefault
+  repo: reeed
+  private: false
+  releaseType: release

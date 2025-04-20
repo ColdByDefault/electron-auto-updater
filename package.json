@@ -1,0 +1,72 @@
+{
+  "name": "reeed",
+  "version": "0.3.0",
+  "description": "Docs-Manager App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:dev": "cross-env NODE_ENV=development electron .",
+    "build": "electron-builder build --win",
+    "release": "electron-builder build --win --publish always",
+    "publish": "electron-builder --win --publish always"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coldbydefault/reeed.git"
+  },
+  "author": "ColdByDefault_AnotherProject",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "electron-log": "^5.3.4",
+    "electron-updater": "^6.1.7"
+  },
+  "build": {
+    "appId": "com.coldbydefault.reeed",
+    "productName": "Reeed",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "coldbydefault",
+        "repo": "reeed",
+        "private": false,
+        "releaseType": "release",
+        "token": "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"
+      }
+    ]
+  }
+}
