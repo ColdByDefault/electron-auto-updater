@@ -23,9 +23,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "dist": "electron-builder"
-
   },
+  "build": {
+    "appId": "com.coldbydefault.reeed",
+    "productName": "reeed Docs-Manager",
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+
   "devDependencies": {
     "electron": "^35.2.0"
+  },
+
+  "dependencies": {
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.6.2"
   }
 }
