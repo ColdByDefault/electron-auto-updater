@@ -23,6 +23,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   removeAllListeners: (channel) => {
     ipcRenderer.removeAllListeners(channel)
   },
+
+  // App version
+  getAppVersion: () => ipcRenderer.invoke("get-app-version"),
 })
 
 console.log("Preload script completed, electronAPI exposed")

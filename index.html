@@ -56,12 +56,18 @@
       background-color: #cccccc;
       cursor: not-allowed;
     }
+    .version {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    <h1>Reeed Application</h1>
+    <h1>Reeed Application NEW UPDATE</h1>
     <p>A simple Electron app with auto-update functionality</p>
+    <p class="version">Version: <span id="app-version">Loading...</span></p>
     
     <div class="update-status">
       <h3>Update Status</h3>
@@ -91,6 +97,7 @@
     const progressBarFill = document.getElementById('progress-bar-fill');
     const checkUpdatesBtn = document.getElementById('check-updates-btn');
     const installUpdateBtn = document.getElementById('install-update-btn');
+    const appVersionElement = document.getElementById('app-version');
     
     // Update info storage
     let currentUpdateInfo = null;
@@ -98,6 +105,17 @@
     // Check if electronAPI is available
     if (window.electronAPI) {
       console.log('electronAPI is available');
+      
+      // Get app version
+      window.electronAPI.getAppVersion()
+        .then(version => {
+          console.log('App version:', version);
+          appVersionElement.textContent = version;
+        })
+        .catch(err => {
+          console.error('Error getting app version:', err);
+          appVersionElement.textContent = 'Unknown';
+        });
       
       // Listen for update messages
       window.electronAPI.onUpdateMessage((message) => {
@@ -188,6 +206,7 @@
       console.error('electronAPI is not available');
       statusMessage.textContent = 'Error: electronAPI is not available';
       checkUpdatesBtn.disabled = true;
+      appVersionElement.textContent = 'Unknown (API not available)';
     }
   </script>
 </body>

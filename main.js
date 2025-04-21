@@ -1,6 +1,10 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron")
 const path = require("path")
 const { autoUpdater } = require("electron-updater")
+const electronRemote = require("@electron/remote/main")
+
+// Initialize remote module
+electronRemote.initialize()
 
 // Keep a global reference of the window object to prevent garbage collection
 let mainWindow
@@ -13,12 +17,15 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(app.getAppPath(), "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,
     },
   })
+
+  // Enable remote module for this window
+  electronRemote.enable(mainWindow.webContents)
 
   console.log(`Loading file from: ${path.join(__dirname, "index.html")}`)
 
@@ -26,23 +33,13 @@ function createWindow() {
   mainWindow.loadFile("index.html")
   console.log("File loaded")
 
-  // Open DevTools in development
-  mainWindow.webContents.openDevTools()
-
-  // Log when the window is ready to show
-  mainWindow.once("ready-to-show", () => {
-    console.log("Window ready to show")
-  })
-
-  // Log when the window content has finished loading
-  mainWindow.webContents.on("did-finish-load", () => {
-    console.log("Content finished loading")
-  })
-
-  // Log any load errors
-  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
-    console.error("Failed to load:", errorCode, errorDescription)
-  })
+  // Open DevTools only in development
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools()
+    console.log("Opening DevTools (development mode)")
+  } else {
+    console.log("DevTools not opened (production mode)")
+  }
 
   // Emitted when the window is closed
   mainWindow.on("closed", () => {
@@ -121,12 +118,13 @@ function sendStatusToWindow(text) {
 // IPC handlers for renderer communication
 ipcMain.handle("check-for-updates", async () => {
   console.log("check-for-updates called from renderer")
-  if (process.env.NODE_ENV !== "development") {
-    autoUpdater.checkForUpdates()
-  } else {
-    console.log("In development mode, not checking for updates")
+  try {
+    await autoUpdater.checkForUpdates()
+    return { success: true }
+  } catch (err) {
+    console.error("Error checking for updates:", err)
+    return { success: false, error: err.message }
   }
-  return { success: true }
 })
 
 ipcMain.handle("quit-and-install", async () => {
@@ -147,4 +145,9 @@ ipcMain.handle("show-update-dialog", async (event, info) => {
   const response = await dialog.showMessageBox(dialogOpts)
   console.log("Dialog response:", response)
   return { buttonIndex: response.response }
+})
+
+// Get app version
+ipcMain.handle("get-app-version", () => {
+  return app.getVersion()
 })

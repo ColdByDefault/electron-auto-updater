@@ -1,19 +1,24 @@
 {
-  "name": "minimal-electron-test",
-  "version": "0.1.0",
+  "name": "reeed",
+  "version": "0.1.1",
+  "author": "coldByDefault-AnotherProject",
   "description": "beta version reeed Docs-Manager",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win",
+    "dev": "cross-env NODE_ENV=development electron .",
     "build:dir": "electron-builder --win --dir",
     "publish": "electron-builder --win --publish always"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "electron": "24.8.8",
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "electron-log": "^5.3.4",
     "electron-updater": "^6.1.7"
   },
   "build": {
@@ -23,9 +28,21 @@
       "output": "dist"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "build/icon.ico",
-      "publish": ["github"]
+      "publish": "github"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "publish": {
       "provider": "github",
