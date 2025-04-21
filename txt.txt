@@ -1,0 +1,51 @@
+{
+  "name": "reeed_v_0_1",
+  "version": "1.0.0",
+  "description": "Electron desktop application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "publish": "electron-builder --win --publish always"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ColdByDefault/reeed.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ColdByDefault/reeed/issues"
+  },
+  "homepage": "https://github.com/ColdByDefault/reeed#readme",
+  "dependencies": {
+    "electron-updater": "^6.6.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "electron": "^35.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.coldbydefault.reeed",
+    "productName": "Reeed",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "favicon.ico",
+      "publish": ["github"]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ColdByDefault",
+      "repo": "reeed"
+    }
+  }
+}

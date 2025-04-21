@@ -1,42 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Reeed beta_v0.1.0 - Docs Manager</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reeed</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    #app {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .update-status {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+    .progress-bar {
+      height: 10px;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #4caf50;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Reeed - Docs Manager</h1>
-    <div class="new-feature">
-      <span class="badge">NEW</span>
-      <p>Version beta with improved update notifications!</p>
-    </div>
+  <div id="app">
+    <h1>Reeed Application</h1>
+    <p>A simple Electron app with auto-update functionality</p>
     
-    <div class="version-info" >
-      <p>Current Version: <span id="message">Loading...</span></p>
-    </div>
-    <div class="update-controls">
-      <button id="check-for-updates">Check for Updates</button>
-      <button id="download-update" disabled>Download Update</button>
-      <button id="install-update" disabled>Install Update</button>
-    </div>
-    
-    <div class="status">
-      <p id="status-message">Ready to check for updates</p>
-      <div id="progress-bar-container" class="hidden">
-        <div id="progress-bar"></div>
+    <div class="update-status">
+      <h3>Update Status</h3>
+      <p id="status-message">No updates checked yet</p>
+      
+      <div id="progress-container" style="display: none;">
+        <p id="progress-text">Downloading: 0%</p>
+        <div class="progress-bar">
+          <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
       </div>
     </div>
-    
-    <div class="whats-new">
-      <h2>after updating, restart the app </h2>
-      <ul>
-      </ul>
+
+    <div>
+      <button id="check-updates-btn">Check for Updates</button>
+      <button id="install-update-btn" style="display: none;">Install Update and Restart</button>
     </div>
   </div>
-  
-  <script src="renderer.js"></script>
+
+  <script>
+    console.log('Script is running');
+    
+    // DOM elements
+    const statusMessage = document.getElementById('status-message');
+    const progressContainer = document.getElementById('progress-container');
+    const progressText = document.getElementById('progress-text');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const checkUpdatesBtn = document.getElementById('check-updates-btn');
+    const installUpdateBtn = document.getElementById('install-update-btn');
+    
+    // Update info storage
+    let currentUpdateInfo = null;
+    
+    // Check if electronAPI is available
+    if (window.electronAPI) {
+      console.log('electronAPI is available');
+      
+      // Listen for update messages
+      window.electronAPI.onUpdateMessage((message) => {
+        console.log('Update message:', message);
+        statusMessage.textContent = message;
+      });
+      
+      // Listen for update available
+      window.electronAPI.onUpdateAvailable((info) => {
+        console.log('Update available:', info);
+        currentUpdateInfo = info;
+        handleUpdateAvailable(info);
+      });
+      
+      // Listen for update downloaded
+      window.electronAPI.onUpdateDownloaded((info) => {
+        console.log('Update downloaded:', info);
+        currentUpdateInfo = info;
+        progressContainer.style.display = 'none';
+        installUpdateBtn.style.display = 'inline-block';
+        handleUpdateDownloaded(info);
+      });
+      
+      // Listen for download progress
+      window.electronAPI.onDownloadProgress((progressObj) => {
+        console.log('Download progress:', progressObj);
+        const percent = progressObj.percent.toFixed(2);
+        progressContainer.style.display = 'block';
+        progressText.textContent = `Downloading: ${percent}%`;
+        progressBarFill.style.width = `${percent}%`;
+      });
+      
+      // Check for updates button
+      checkUpdatesBtn.addEventListener('click', async () => {
+        console.log('Check for updates clicked');
+        statusMessage.textContent = 'Checking for updates...';
+        try {
+          const result = await window.electronAPI.checkForUpdates();
+          console.log('Check for updates result:', result);
+        } catch (err) {
+          console.error('Error checking for updates:', err);
+          statusMessage.textContent = `Error checking for updates: ${err.message}`;
+        }
+      });
+      
+      // Install update button
+      installUpdateBtn.addEventListener('click', async () => {
+        console.log('Install update clicked');
+        try {
+          await window.electronAPI.quitAndInstall();
+        } catch (err) {
+          console.error('Error installing update:', err);
+          statusMessage.textContent = `Error installing update: ${err.message}`;
+        }
+      });
+      
+      // Handle update available
+      async function handleUpdateAvailable(info) {
+        console.log('Handling update available');
+        try {
+          const result = await window.electronAPI.showUpdateDialog(info);
+          console.log('Update dialog result:', result);
+          if (result.buttonIndex === 0) {
+            // User clicked "Install and Restart"
+            statusMessage.textContent = 'Downloading update...';
+          }
+        } catch (err) {
+          console.error('Error showing update dialog:', err);
+        }
+      }
+      
+      // Handle update downloaded
+      async function handleUpdateDownloaded(info) {
+        console.log('Handling update downloaded');
+        try {
+          const result = await window.electronAPI.showUpdateDialog(info);
+          console.log('Update dialog result:', result);
+          if (result.buttonIndex === 0) {
+            // User clicked "Install and Restart"
+            await window.electronAPI.quitAndInstall();
+          }
+        } catch (err) {
+          console.error('Error showing update dialog:', err);
+        }
+      }
+      
+    } else {
+      console.error('electronAPI is not available');
+      statusMessage.textContent = 'Error: electronAPI is not available';
+      checkUpdatesBtn.disabled = true;
+    }
+  </script>
 </body>
 </html>
