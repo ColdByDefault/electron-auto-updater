@@ -1,8 +1,8 @@
 {
-  "name": "reeed",
+  "name": "electron-auto-updater",
   "version": "0.1.1",
   "author": "coldByDefault-AnotherProject",
-  "description": "beta version reeed Docs-Manager",
+  "description": "beta version",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -23,7 +23,7 @@
   },
   "build": {
     "appId": "com.coldbydefault.reeed",
-    "productName": "Reeed",
+    "productName": "Auto-Updater-Desktop-App",
     "directories": {
       "output": "dist"
     },
