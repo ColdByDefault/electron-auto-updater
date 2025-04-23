@@ -31,7 +31,7 @@
       "target": [
         "nsis"
       ],
-      "icon": "build/icon.ico",
+      "icon": "build/icon.png",
       "publish": "github"
     },
     "nsis": {
@@ -47,7 +47,7 @@
     "publish": {
       "provider": "github",
       "owner": "ColdByDefault",
-      "repo": "reeed"
+      "repo": "electron-auto-updater"
     }
   }
 }
